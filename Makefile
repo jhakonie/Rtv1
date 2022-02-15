@@ -88,22 +88,23 @@ CPPFLAGS = -D_REENTRANT
 
 all: $(NAME)
 
-$(NAME): $(build_dir) $(obj_files)
+$(NAME): $(obj_files) | $(build_dir)
 	@ $(LD) $(obj_files) $(LDFLAGS) -o $(NAME)
 
 $(obj_files): $(libsdl2_lib)
 
 $(build_dir):
-	@ mkdir $(build_dir)
+	mkdir $(build_dir)
 
 $(build_dir)%.o: $(src_dir)%.c
-$(build_dir)%.o: $(src_dir)%.c | $(build_dir)%.dep $(build_dir)
-	@ $(CC) $(CFLAGS) $(CPPFLAGS) $(dependency_flags) -o $(@) $(<) #-fsanitize=address
+$(build_dir)%.o: $(src_dir)%.c | $(build_dir)%.dep
+	@ $(CC) $(CFLAGS) $(CPPFLAGS) $(dependency_flags) -o $(@) $(<)
 	@ echo "[compiling: $(@)]"
 
 $(dependency_files):
 
 $(libsdl2_makefile):
+	if test -d $(build_dir); then echo exists; else mkdir $(build_dir); fi
 	cd libsdl2 && ./configure --prefix=$(abspath $(build_dir)libsdl2) --disable-shared --disable-video-wayland
 	$(MAKE) --directory=libsdl2
 
@@ -118,6 +119,8 @@ fclean:
 	rm -f RTv1
 	if test -f $(libsdl2_makefile); then $(MAKE) AUTOMAKE=: --directory=libsdl2 distclean; fi
 	rm -rf $(build_dir)
+	@ echo [cleaned libsdl2]
+	@ echo "[removed $(build_dir)]"
 	@ echo "[removed $(NAME)]"
 
 re: fclean all
