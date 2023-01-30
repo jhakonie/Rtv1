@@ -13,6 +13,8 @@
   <img src="https://github.com/jhakonie/Rtv1/blob/master/random_point_of_view.png" width="45%" height="40%">
 </p>
 
+The images above are along the xyz-axes and a random point of view, the pink sphere is at 0,0,0.
+
 ## Deployment
 
 To deploy this project run:
